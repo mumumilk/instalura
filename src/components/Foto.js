@@ -2,12 +2,22 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 
 class FotoAtualizacoes extends Component {
+    like(event) {
+        event.preventDefault();
+        this.props.like(this.props.foto.id);
+    }
+
+    comenta(event) {
+        event.preventDefault();
+        this.props.comenta(this.props.foto.id, this.comentario.value);
+    }
+
     render() {
         return (
             <section className="fotoAtualizacoes">
-                <a href="#" className="fotoAtualizacoes-like">Likar</a>
-                <form className="fotoAtualizacoes-form">
-                    <input type="text" placeholder="Adicione um comentário..." className="fotoAtualizacoes-form-campo" />
+                <a onClick={this.like.bind(this)} className={this.props.foto.likeada ? 'fotoAtualizacoes-like-ativo' : 'fotoAtualizacoes-like'}>Likar</a>
+                <form className="fotoAtualizacoes-form" onSubmit={this.comenta.bind(this)}>
+                    <input type="text" placeholder="Adicione um comentário..." className="fotoAtualizacoes-form-campo" ref={input => this.comentario = input} />
                     <input type="submit" value="Comentar!" className="fotoAtualizacoes-form-submit" />
                 </form>
 
@@ -17,19 +27,22 @@ class FotoAtualizacoes extends Component {
 }
 
 class FotoInfo extends Component {
+
     render() {
         return (
             <div className="foto-info">
                 <div className="foto-info-likes">
                     {
-                        this.props.foto.likers.map(liker => <a href="#" key={liker.login}>{liker.login}</a>)
+                        this.props.foto.likers.map(liker => <Link to={`/timeline/${liker.login}`} key={liker.login}>{liker.login}</Link>)
                     }
                     &nbsp;{this.props.foto.likers.length > 1 ? 'curtiram' : this.props.foto.likers.length === 1 ? 'curtiu' : 'sem curtidas'}
 
                 </div>
 
                 <p className="foto-info-legenda">
-                    <a className="foto-info-autor">{this.props.foto.loginUsuario}</a>
+                    <Link className="foto-info-autor" to={`/timeline/${this.props.foto.loginUsuario}`}>
+                        {this.props.foto.loginUsuario}
+                    </Link>
                     &nbsp;{this.props.foto.comentario}
                 </p>
 
@@ -38,7 +51,9 @@ class FotoInfo extends Component {
                         this.props.foto.comentarios.map(comentario => {
                             return (
                                 <li className="comentario" key={comentario.id}>
-                                    <a className="foto-info-autor">{comentario.login}</a>
+                                    <Link to={`/timeline/${comentario.login}`}>
+                                        {comentario.login}
+                                    </Link>
                                     &nbsp;{comentario.texto}
                                 </li>
                             );
@@ -58,9 +73,9 @@ class FotoHeader extends Component {
                 <figure className="foto-usuario">
                     <img src={this.props.foto.urlPerfil} alt="foto do usuario" />
                     <figcaption className="foto-usuario">
-                        {/* <Link to={`/timeline/${this.props.foto.loginUsuario}`}>
+                        <Link to={`/timeline/${this.props.foto.loginUsuario}`}>
                             {this.props.foto.loginUsuario}
-                        </Link> */}
+                        </Link>
                     </figcaption>
                 </figure>
                 <time className="foto-data">{this.props.foto.horario}</time>
@@ -76,7 +91,7 @@ export default class Foto extends Component {
                 <FotoHeader foto={this.props.foto} />
                 <img alt="foto" className="foto-src" src={this.props.foto.urlFoto} />
                 <FotoInfo foto={this.props.foto} />
-                <FotoAtualizacoes />
+                <FotoAtualizacoes {...this.props}/>
             </div>
         );
     }

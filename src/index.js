@@ -11,7 +11,7 @@ ReactDOM.render(
         <BrowserRouter>
             <div>
                 <Route exact path="/" component={Login}/>
-                <Route path="/timeline" component={App}/>
+                <Route path="/timeline/:login?" component={App}/>
             </div>
         </BrowserRouter>
     ),document.getElementById('root')
